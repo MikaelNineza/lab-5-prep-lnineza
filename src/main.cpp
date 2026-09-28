@@ -78,10 +78,11 @@ void render(sf::RenderWindow& window) {
     // the left/right half of the screen.
     // Movement should be governed by the tween function.
     // ====== ====== ======
+    const float margin = 30.0F;
     sf::CircleShape circle(15.0F);
     static float time(0);
-    circle.setPosition({tween(30.0F, WINDOW_WIDTH - 30.0F, time++ / FPS_LIMIT), WINDOW_HEIGHT / 3.0F});
-    if (time >= FPS_LIMIT) time = 0;
+    circle.setPosition({tween(margin, WINDOW_WIDTH - margin, time++ / (FPS_LIMIT*3)), WINDOW_HEIGHT / 3.0F});
+    if (time >= FPS_LIMIT*3) time = 0;
     window.draw(circle);
 
 
@@ -89,6 +90,11 @@ void render(sf::RenderWindow& window) {
     // TODO: (Q3) Draw tween function graph with a dot
     // on the current portion of the curve
     // ====== ====== ======
+    const float topY = (WINDOW_HEIGHT / 3.0F) + 20.0F;
+    const float bottomY = WINDOW_HEIGHT - 10.0F;
+    sf::CircleShape dot(5.0F);
+    dot.setPosition({tween(margin, WINDOW_WIDTH - margin, time / (FPS_LIMIT*3)), tween(bottomY, topY, time / (FPS_LIMIT*3))});
+    window.draw(dot);
 
     window.display();
 }
