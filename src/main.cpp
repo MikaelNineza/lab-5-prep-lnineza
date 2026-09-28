@@ -29,6 +29,44 @@ void handleInput(sf::Window& window, bool& shouldQuit) {
         //  with different alternate tween functions.
         //  Functions can be from lecture or from https://easings.net/#
         // ====== ====== ======
+    if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+            if (keyPressed->code == sf::Keyboard::Key::Num1) tween = [](float a, float b, float t) { // easeInSine
+                t = 1 - std::cos((t * M_PI) / 2);
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num2) tween = [](float a, float b, float t) { // easeInQuart
+                t = t * t * t * t; 
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num3) tween = [](float a, float b, float t) { // easeInOutQuad
+                t = t < 0.5 ? t * t * 2 : 1 - (((t * (-2) + 2) * t) / 2);
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num4) tween = [](float a, float b, float t) { // easeOutCirc
+                t = std::sqrt(1 - std::pow(t - 1, 2));
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num5) tween = [](float a, float b, float t) { // easeInCirc
+                t = 1 - std::sqrt(1 - std::pow(t, 2));
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num6) tween = [](float a, float b, float t) { // easeInQuint
+                t = t * t * t * t * t;
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num7) tween = [](float a, float b, float t) { // easeInExpo
+                t = t == 0 ? 0 : std::pow(2, 10 * t - 10); 
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num8) tween = [](float a, float b, float t) { // easeInOutSine
+                t = -(std::cos(M_PI * t) - 1) / 2; 
+                return (1 - t) * a + t * b;
+            };
+            else if (keyPressed->code == sf::Keyboard::Key::Num9) tween = [](float a, float b, float t) { // easeOutCubic
+                t = 1 - std::pow(1 - t, 3);
+                return (1 - t) * a + t * b;
+            };
+        }
     }
 }
 
