@@ -9,7 +9,7 @@
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 800;
-const int FPS_LIMIT = 30;
+const int FPS_LIMIT = 60;
 
 // global tween function
 std::function<float(float, float, float)> tween = [](float a, float b, float t) {
@@ -40,6 +40,12 @@ void render(sf::RenderWindow& window) {
     // the left/right half of the screen.
     // Movement should be governed by the tween function.
     // ====== ====== ======
+    sf::CircleShape circle(15.0F);
+    static float time(0);
+    circle.setPosition({tween(30.0F, WINDOW_WIDTH - 30.0F, time++ / FPS_LIMIT), WINDOW_HEIGHT / 3.0F});
+    if (time >= FPS_LIMIT) time = 0;
+    window.draw(circle);
+
 
     // ====== ====== ======
     // TODO: (Q3) Draw tween function graph with a dot
