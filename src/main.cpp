@@ -29,7 +29,7 @@ void handleInput(sf::Window& window, bool& shouldQuit) {
         //  with different alternate tween functions.
         //  Functions can be from lecture or from https://easings.net/#
         // ====== ====== ======
-    if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
+        if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
             if (keyPressed->code == sf::Keyboard::Key::Num1) tween = [](float a, float b, float t) { // easeInSine
                 t = 1 - std::cos((t * M_PI) / 2);
                 return (1 - t) * a + t * b;
@@ -39,7 +39,7 @@ void handleInput(sf::Window& window, bool& shouldQuit) {
                 return (1 - t) * a + t * b;
             };
             else if (keyPressed->code == sf::Keyboard::Key::Num3) tween = [](float a, float b, float t) { // easeInOutQuad
-                t = t < 0.5 ? t * t * 2 : 1 - (((t * (-2) + 2) * t) / 2);
+                t = t < 0.5 ? t * t * 2 : 1 - (std::pow(t * (-2) + 2, 2) / 2);
                 return (1 - t) * a + t * b;
             };
             else if (keyPressed->code == sf::Keyboard::Key::Num4) tween = [](float a, float b, float t) { // easeOutCirc
@@ -79,10 +79,15 @@ void render(sf::RenderWindow& window) {
     // Movement should be governed by the tween function.
     // ====== ====== ======
     const float margin = 30.0F;
-    sf::CircleShape circle(15.0F);
+    const float leftX = margin;
+    const float rightX = WINDOW_WIDTH - margin;
     static float time(0);
-    circle.setPosition({tween(margin, WINDOW_WIDTH - margin, time++ / (FPS_LIMIT*3)), WINDOW_HEIGHT / 3.0F});
+    const float t = time / (FPS_LIMIT*3);
+    time++;
     if (time >= FPS_LIMIT*3) time = 0;
+    
+    sf::CircleShape circle(15.0F);
+    circle.setPosition({tween(leftX, rightX, t) - circle.getRadius(), WINDOW_HEIGHT / 3.0F});
     window.draw(circle);
 
 
@@ -90,10 +95,20 @@ void render(sf::RenderWindow& window) {
     // TODO: (Q3) Draw tween function graph with a dot
     // on the current portion of the curve
     // ====== ====== ======
-    const float topY = (WINDOW_HEIGHT / 3.0F) + 20.0F;
-    const float bottomY = WINDOW_HEIGHT - 10.0F;
-    sf::CircleShape dot(5.0F);
-    dot.setPosition({tween(margin, WINDOW_WIDTH - margin, time / (FPS_LIMIT*3)), tween(bottomY, topY, time / (FPS_LIMIT*3))});
+    const float topY = (WINDOW_HEIGHT / 3.0F) + 40.0F;
+    const float bottomY = WINDOW_HEIGHT - 40.0F;
+    const int sampleSize = 100;
+
+    sf::VertexArray line(sf::PrimitiveType::LineStrip, sampleSize + 1);
+    for (int i = 0; i <= sampleSize; ++i) {
+        float l = static_cast<float>(i) / sampleSize;
+        line[i].position = {leftX + l * (rightX - leftX), tween(bottomY, topY, l)};
+        line[i].color = sf::Color::Blue;
+    }
+    window.draw(line);
+    
+    sf::CircleShape dot(2.0F);
+    dot.setPosition({leftX + t * (rightX - leftX) - dot.getRadius(), tween(bottomY, topY, t)});
     window.draw(dot);
 
     window.display();
